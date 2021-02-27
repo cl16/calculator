@@ -17,18 +17,22 @@ function divide (a, b) {
 }
 
 // Back-end consts and variables:
-var fieldValue = "0";           // initial value
-var operator = add;
-var initialOperation = true;
+const displayMaxChars = 13;
+var operator = undefined;
+var overwrite = true;
+
 
 var operand1 = {
     name: "operand1",
-    value: 0,
+    value: undefined,
     set: function (val) {
         this.value = val;
     },
     get: function () {
         return this.value;
+    },
+    reset: function () {
+        this.value = undefined;
     },
 }
 
@@ -41,10 +45,10 @@ var operand2 = {
     get: function () {
         return this.value;
     },
+    reset: function () {
+        this.value = undefined;
+    },
 }
-
-var overwrite = true;
-var dataPointer = operand2;
 
 const operatorMap = {
     "+": add,
@@ -59,29 +63,6 @@ function operate(func, a, b) {
     return func(a, b);
 }
 
-function performOperation() {
-    dataPointer = operand1;
-    let result = operate(operator, operand1.get(), operand2.get());
-    overwrite = true;
-    updateValue(dataPointer, result);
-
-}
-
-function updateValue(data, val) {
-    // update variable "data" with value "val", with either append or overwrite depending
-    // on the state of global variable "overwrite"
-    if (overwrite == false && data.get() != 0) {
-        newValueAsString = data.get().toString() + val.toString();
-        data.set(parseInt(newValueAsString));
-    }
-    else {
-        data.set(parseInt(val)); // val should already be non-string
-    }
-
-    // then update display accordingly:
-    updateDisplay(data.get());
-}
-
 function updateDisplay(val) {
     let valAsString = val.toString();
     display.textContent = valAsString;
@@ -90,23 +71,125 @@ function updateDisplay(val) {
 function setOperator(symbol) {
     // we are done with setting the first operand:
     operator = operatorMap[symbol];
-    overwrite = true;
 }
 
-// DOM variables:
+function stringToNum(s) {
+    if (s.indexOf(".") == -1) {
+        return parseInt(s);
+    }
+    else {
+        return parseFloat(s);
+    }
+}
+
+function numToString(n) {
+    // ensure decimal numbers are rounded, and can add test for max digits (string length) display handles
+    
+    // if float
+    if (n % 1 != 0) {
+        nAsString = n.toString();
+        if (nAsString.length < displayMaxChars) {
+            return nAsString;
+        }
+        else {
+            // get # of quotient chars before decimal
+            let quotientChars = Math.floor(n / 1).toString().length;
+            let decimalPlaces = displayMaxChars - quotientChars - 1;    // -1 for the actual "." place
+            let rounded = n.toFixed(decimalPlaces)
+            if (rounded % 1 == 0) {
+                roundedString = (rounded / 1).toString();
+            }
+            else {
+                roundedString = rounded.toString();
+            }
+            return roundedString;
+        }
+    }
+    else {
+        return n.toString();
+    }
+}
+
+function functionClick (funcSymbol) {
+    
+    if (operator != undefined) {
+        // pull operand2 from display
+        operand2.set(stringToNum(display.textContent));        // just turn parseInt into custom func handling int/float for float support
+
+        // perform operate function
+        let result = operate(operator, operand1.get(), operand2.get());
+
+        // set operand1 as result (operand1 = result)
+        operand1.set(result);
+
+        // set overwrite to true
+        overwrite = true;
+        
+        // updat display on result
+        updateDisplay(result);
+        overwrite = true; // overwrite again for next numbers
+
+        // set operand2 as undefined
+        operand2.set(undefined);
+
+        if (funcSymbol != "=") {
+            // set operator as funcSymbol input on this function call
+            setOperator(funcSymbol);
+        }
+        else {
+            setOperator(undefined);
+        }
+    }
+    else if (funcSymbol != "=") {
+        // pull operand 1 from display
+        operand1.set(stringToNum(display.textContent));
+        
+        // set operator to input symbol
+        setOperator(funcSymbol);
+
+        // set display to overwrite
+        overwrite = true;
+    }
+    else {
+        // pass: do nothing on an = symbol with undefined operator
+    }
+}
+
+// DOM variables and functions:
 const display = document.querySelector("#display");
 
+function updateDisplay(val) {
+    let valAsString = numToString(val);
+
+    // overwrite if overwrite global var set to true or display leads with 0:
+    if (overwrite == false && display.textContent != "0") {
+        if ((display.textContent.length + valAsString.length + 1) < 13) {   // +1 for next char added below
+            display.textContent = display.textContent + valAsString;
+        }
+        else {
+            display.textContent = "# Limit -> AC";
+        }
+        
+    }
+    else {
+        if (valAsString.length <= 13) {
+            display.textContent = valAsString;
+            overwrite = false;
+        }
+        else {
+            display.textContent = "# Limit -> AC";
+        }
+    }
+}
 
 // Event Listeners:
 const numberButtons = document.querySelectorAll(".number-button");
 numberButtons.forEach((btn) => {
     btn.addEventListener('click', function(e) {
         let btnValue = e.target.dataset.value;
-        // set data value to update
         
-        updateValue(dataPointer, btnValue);
-        overwrite = false;
-
+        // update display using func that considers overwrite
+        updateDisplay(btnValue);
     })
 })
 
@@ -114,16 +197,15 @@ const functionButtons = document.querySelectorAll(".function-button");
 functionButtons.forEach((btn) => {
     btn.addEventListener('click', function(e) {
         let btnValue = e.target.dataset.value;
-        setOperator(btnValue);
-        performOperation();
-        initialOperation = false;       // at this point could repeatedly hit "=", all necessary data
-        dataPointer = operand2;
+        functionClick(btnValue);
     })
 })
 
-const equalsButton = document.querySelector(".equals-button");
-equalsButton.addEventListener('click', function () {
-    if (initialOperation == false) {
-        performOperation();
-    }
-});
+function clearAll() {
+    operand1.reset();
+    operand2.reset();
+    setOperator(undefined);
+    updateDisplay(0);
+}
+const clearButton = document.querySelector("#ac");
+clearButton.addEventListener('click', clearAll);
