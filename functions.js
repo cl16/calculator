@@ -19,7 +19,7 @@ function divide (a, b) {
 // Back-end consts and variables:
 var fieldValue = "0";           // initial value
 var operand1 = 0;               // initial value
-var operator = undefined;
+var operator = add;
 var operand2 = undefined;
 
 var overwrite = true;
@@ -37,11 +37,28 @@ function operate(func, a, b) {
     return func(a, b);
 }
 
+function performOperation() {
+    setOperand2(fieldValue);
+    let result = operate(operator, operand1, operand2);
+    overwrite = true;
+    updateDisplay(result);
+}
+
 function equals() {
+    // need to retrieve operand 2 from display
+    setOperand2(fieldValue);
+    
+    // result of operation becomes new field value and base operand1
     operand1 = operate(operator, operand1, operand2);
+    
+    // Overwrite display with value of operation output
+    overwrite = true;
     updateDisplay(operand1);
+    
+    // reset operator and operand2
     operator = undefined;
     operand2 = undefined;
+    
 }
 
 function updateDisplay(val) {
@@ -58,7 +75,7 @@ function updateDisplay(val) {
         overwrite = false;
     }
 
-    display.textContent = valAsString;
+    display.textContent = fieldValue;
 }
 
 function setOperand1(val) {
@@ -77,6 +94,7 @@ function setOperator(symbol) {
     // we are done with setting the first operand:
     setOperand1(fieldValue);
     operator = operatorMap[symbol];
+    overwrite = true;
 }
 
 // DOM variables:
