@@ -113,9 +113,31 @@ function numToString(n) {
 function functionClick (funcSymbol) {
     
     if (operator != undefined) {
+        
+        // if overwrite == true, an operand2 hasn't been input yet, so operator just changes...
+        if (overwrite == true) {
+            if (funcSymbol != "=") {
+                // set operator as funcSymbol input on this function call
+                setOperator(funcSymbol);
+                return undefined;
+            }
+            else {
+                setOperator(undefined);
+                return undefined;
+            }
+        }
+        
         // pull operand2 from display
         operand2.set(stringToNum(display.textContent));        // just turn parseInt into custom func handling int/float for float support
 
+        // divide by zero error, reset on operand2 input after "/" selected...
+        if (operator == divide && operand2.get() == 0) {
+            operand2.set(undefined);
+            display.textContent = "/0 Error"
+            overwrite = true;
+            return undefined; // break
+        }
+        
         // perform operate function
         let result = operate(operator, operand1.get(), operand2.get());
 
@@ -163,7 +185,12 @@ function updateDisplay(val) {
 
     // overwrite if overwrite global var set to true or display leads with 0:
     if (overwrite == false && display.textContent != "0") {
-        if ((display.textContent.length + valAsString.length + 1) < 13) {   // +1 for next char added below
+        
+        if (valAsString == "." && display.textContent.indexOf(".") != -1) {
+            // do not take action on the "." button click
+        }
+
+        else if ((display.textContent.length + valAsString.length + 1) < 13) {   // +1 for next char added below
             display.textContent = display.textContent + valAsString;
         }
         else {
@@ -172,6 +199,10 @@ function updateDisplay(val) {
         
     }
     else {
+        if (valAsString == ".") {
+
+        }
+        
         if (valAsString.length <= 13) {
             display.textContent = valAsString;
             overwrite = false;
