@@ -18,11 +18,33 @@ function divide (a, b) {
 
 // Back-end consts and variables:
 var fieldValue = "0";           // initial value
-var operand1 = 0;               // initial value
 var operator = add;
-var operand2 = undefined;
+var initialOperation = true;
+
+var operand1 = {
+    name: "operand1",
+    value: 0,
+    set: function (val) {
+        this.value = val;
+    },
+    get: function () {
+        return this.value;
+    },
+}
+
+var operand2 = {
+    name: "operand2:",
+    value: undefined,
+    set: function (val) {
+        this.value = val;
+    },
+    get: function () {
+        return this.value;
+    },
+}
 
 var overwrite = true;
+var dataPointer = operand2;
 
 const operatorMap = {
     "+": add,
@@ -38,61 +60,35 @@ function operate(func, a, b) {
 }
 
 function performOperation() {
-    setOperand2(fieldValue);
-    let result = operate(operator, operand1, operand2);
+    dataPointer = operand1;
+    let result = operate(operator, operand1.get(), operand2.get());
     overwrite = true;
-    updateDisplay(result);
+    updateValue(dataPointer, result);
+
 }
 
-function equals() {
-    // need to retrieve operand 2 from display
-    setOperand2(fieldValue);
-    
-    // result of operation becomes new field value and base operand1
-    operand1 = operate(operator, operand1, operand2);
-    
-    // Overwrite display with value of operation output
-    overwrite = true;
-    updateDisplay(operand1);
-    
-    // reset operator and operand2
-    operator = undefined;
-    operand2 = undefined;
-    
+function updateValue(data, val) {
+    // update variable "data" with value "val", with either append or overwrite depending
+    // on the state of global variable "overwrite"
+    if (overwrite == false && data.get() != 0) {
+        newValueAsString = data.get().toString() + val.toString();
+        data.set(parseInt(newValueAsString));
+    }
+    else {
+        data.set(parseInt(val)); // val should already be non-string
+    }
+
+    // then update display accordingly:
+    updateDisplay(data.get());
 }
 
 function updateDisplay(val) {
     let valAsString = val.toString();
-
-    // if overwrite is set to false, append digits:
-    if (overwrite == false) {
-        fieldValue = fieldValue + valAsString;
-    }
-
-    // if overwrite is set to true, reset field for number input:
-    else {
-        fieldValue = valAsString;
-        overwrite = false;
-    }
-
-    display.textContent = fieldValue;
-}
-
-function setOperand1(val) {
-    // convert val to number (will come from display as string), and store value:
-    // converts all to int for now, add float later:
-    operand1 = parseInt(val);
-}
-
-function setOperand2(val) {
-    // convert val to number (will come from display as string), and store value:
-    // converts all to int for now, add float later:
-    operand2 = parseInt(val);
+    display.textContent = valAsString;
 }
 
 function setOperator(symbol) {
     // we are done with setting the first operand:
-    setOperand1(fieldValue);
     operator = operatorMap[symbol];
     overwrite = true;
 }
@@ -106,7 +102,11 @@ const numberButtons = document.querySelectorAll(".number-button");
 numberButtons.forEach((btn) => {
     btn.addEventListener('click', function(e) {
         let btnValue = e.target.dataset.value;
-        updateDisplay(btnValue);
+        // set data value to update
+        
+        updateValue(dataPointer, btnValue);
+        overwrite = false;
+
     })
 })
 
@@ -115,8 +115,15 @@ functionButtons.forEach((btn) => {
     btn.addEventListener('click', function(e) {
         let btnValue = e.target.dataset.value;
         setOperator(btnValue);
+        performOperation();
+        initialOperation = false;       // at this point could repeatedly hit "=", all necessary data
+        dataPointer = operand2;
     })
 })
 
 const equalsButton = document.querySelector(".equals-button");
-equalsButton.addEventListener('click', equals);
+equalsButton.addEventListener('click', function () {
+    if (initialOperation == false) {
+        performOperation();
+    }
+});
