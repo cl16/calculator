@@ -9,28 +9,31 @@ body {
 }
 
 #main-container {
-    height: 400px;
+    height: 500px;
     width: 400px;
-    background-color: rgb(41, 41, 41);
+    background-color: rgb(29, 29, 29);
 
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #calculator-container {
     height: 100%;
     width: 100%;
-    margin: 0px;
+    margin: 5px;
     
     display: flex;
     flex-direction: column;
 }
 
 #display {
-    height: auto;
+    height: 80px;;
     width: auto;
     background-color: rgb(131, 165, 103);
-    margin: 5px;
+    margin: 10px;
+    margin-bottom: 0px;
     border: 2px solid black;
 
     display: flex;
@@ -39,24 +42,41 @@ body {
 
     font-family: 'Roboto', sans-serif;
     font-size: 35px;
-
 }
 
 #button-container {
-
     height: 100%;
-    margin: 3px;
+    width: auto;
+    margin: 10px;
 }
 
 #button-grid {
     height: 100%;
     width: auto;
-
     margin: 0px;
-
     display: grid;
     grid-template-columns: auto auto auto auto;
     grid-template-rows: auto auto auto auto;
+    row-gap: 6px;
+    column-gap: 6px;
+}
+
+#other-button-container {
+    height: 75px;
+    width: auto;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+#other-button-grid {
+    height: 100%;
+    width: auto;
+    margin: 0px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
     row-gap: 6px;
     column-gap: 6px;
 }
@@ -68,7 +88,7 @@ body {
     align-items: center;
     font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: rgb(77, 77, 77);
+    background-color: rgb(107, 107, 107);
 }
 
 .function-button {
@@ -78,7 +98,7 @@ body {
     align-items: center;
     font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: rgb(59, 59, 59);
+    background-color: rgb(73, 73, 73);
 }
 
 .other-button {
@@ -88,16 +108,13 @@ body {
     align-items: center;
     font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: brown;
-    margin: 6px;
+    background-color: silver;
 }
 
 .equals-button {
-    border: 2px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Roboto', sans-serif;
-    font-size: 30px;
+    background-color:rgb(185, 185, 185);
+}
+
+#ac {
     background-color: brown;
 }

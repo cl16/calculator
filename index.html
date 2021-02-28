@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="main-container">
         <div id="calculator-container">
             <div id="display">0</div>
-            <div id="ac" class="other-button">AC</div>
+            <div id="other-button-container">
+                <div id="other-button-grid">
+                    <div id="ac" class="other-button">AC</div>
+                    <div id="plus-minus" data-value="+/-" class="other-button display-button">+/-</div>
+                    <div id="percent" data-value="%" class="other-button display-button">%</div>
+                    <div id="backspace" data-value="back" class="other-button display-button">Back</div>
+                </div>
+            </div>
             <div id="button-container">
                 <div id="button-grid">
                     <div id="seven" data-value=7 class="number-button row-four">7</div>
@@ -23,11 +32,10 @@
                     <div id="subtract" data-value="-" class="function-button row-two">-</div>
                     <div id="zero" data-value=0 class="number-button row-one">0</div>
                     <div id="point" data-value="." class="number-button row-one">.</div>
-                    <div id="equals" data-value="=" class="function-button">=</div>
+                    <div id="equals" data-value="=" class="function-button equals-button">=</div>
                     <div id="add" data-value="+" class="function-button row-one">+</div>
                 </div>
             </div>
-            
         </div>
     </div>
 </body>

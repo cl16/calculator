@@ -17,10 +17,9 @@ function divide (a, b) {
 }
 
 // Back-end consts and variables:
-const displayMaxChars = 13;
+const displayMaxChars = 20;
 var operator = undefined;
 var overwrite = true;
-
 
 var operand1 = {
     name: "operand1",
@@ -63,17 +62,17 @@ function operate(func, a, b) {
     return func(a, b);
 }
 
-function updateDisplay(val) {
-    let valAsString = val.toString();
-    display.textContent = valAsString;
-}
-
 function setOperator(symbol) {
     // we are done with setting the first operand:
     operator = operatorMap[symbol];
 }
 
 function stringToNum(s) {
+    // Check for % symbol and calculate
+    if (s.charAt(s.length-1) == "%") {
+        return stringToNum(s.slice(0,s.length-1)) / 100; // recursively solve then /100
+    }
+    
     if (s.indexOf(".") == -1) {
         return parseInt(s);
     }
@@ -84,7 +83,6 @@ function stringToNum(s) {
 
 function numToString(n) {
     // ensure decimal numbers are rounded, and can add test for max digits (string length) display handles
-    
     // if float
     if (n % 1 != 0) {
         nAsString = n.toString();
@@ -114,9 +112,7 @@ function numToString(n) {
 }
 
 function functionClick (funcSymbol) {
-    
     if (operator != undefined) {
-        
         // if overwrite == true, an operand2 hasn't been input yet, so operator just changes...
         if (overwrite == true) {
             if (funcSymbol != "=") {
@@ -132,7 +128,6 @@ function functionClick (funcSymbol) {
         
         // pull operand2 from display
         operand2.set(stringToNum(display.textContent));        // just turn parseInt into custom func handling int/float for float support
-
         // divide by zero error, reset on operand2 input after "/" selected...
         if (operator == divide && operand2.get() == 0) {
             operand2.set(undefined);
@@ -143,20 +138,15 @@ function functionClick (funcSymbol) {
         
         // perform operate function
         let result = operate(operator, operand1.get(), operand2.get());
-
         // set operand1 as result (operand1 = result)
         operand1.set(result);
-
         // set overwrite to true
         overwrite = true;
-        
         // updat display on result
         updateDisplay(result);
         overwrite = true; // overwrite again for next numbers
-
         // set operand2 as undefined
         operand2.set(undefined);
-
         if (funcSymbol != "=") {
             // set operator as funcSymbol input on this function call
             setOperator(funcSymbol);
@@ -185,28 +175,61 @@ const display = document.querySelector("#display");
 
 function updateDisplay(val) {
     let valAsString = numToString(val);
+    
+    if (valAsString == "back") {
+        display.textContent = display.textContent.slice(0, display.textContent.length -1);
+        if (display.textContent == "") {
+            display.textContent = "0";
+        }
+        else {
+            // pass
+        }
+    }
+    
+    else if (valAsString == "+/-") {
+        if (display.textContent.charAt(0) != "-") {
+            display.textContent = "-" + display.textContent;
+        }
+        else {
+            display.textContent = display.textContent.slice(1);
+        }
+
+    }
+
+    else if (valAsString == "%") {
+        if (overwrite == false) {
+            if (display.textContent.charAt(display.textContent.length - 1) != "%") {
+                display.textContent = display.textContent + "%";
+            }
+            else {
+                // do not add another % sign if already there
+            }
+        }
+        else {
+            // do not add a % sign to a number about to be overwritten
+        }
+    }
 
     // overwrite if overwrite global var set to true or display leads with 0:
-    if (overwrite == false && display.textContent != "0") {
+    else if (overwrite == false && display.textContent != "0") {
         
         if (valAsString == "." && display.textContent.indexOf(".") != -1) {
             // do not take action on the "." button click
         }
 
-        else if ((display.textContent.length + valAsString.length + 1) < 13) {   // +1 for next char added below
+        else if ((display.textContent.length + valAsString.length + 1) < displayMaxChars) {   // +1 for next char added below
             display.textContent = display.textContent + valAsString;
         }
         else {
             display.textContent = "# Limit -> AC";
         }
-        
     }
     else {
         if (valAsString == ".") {
-            display.textContent = display.textContent + valAsString;
+            display.textContent = "0" + valAsString;
             overwrite = false;
         }
-        else if (valAsString.length <= 13) {
+        else if (valAsString.length <= displayMaxChars) {
             display.textContent = valAsString;
             overwrite = false;
         }
@@ -245,3 +268,11 @@ function clearAll() {
 }
 const clearButton = document.querySelector("#ac");
 clearButton.addEventListener('click', clearAll);
+
+const displayButtons = document.querySelectorAll(".display-button");
+displayButtons.forEach((btn) => {
+    btn.addEventListener('click', function (e) {
+        let btnValue = e.target.dataset.value;
+        updateDisplay(btnValue);
+    })
+})
