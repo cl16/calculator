@@ -1,2 +1,2 @@
 # calculator
-Calculator web app from The Odin Project.
+Web-based JavaScript calculator completed with The Odin Project.
