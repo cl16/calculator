@@ -1,7 +1,7 @@
 body {
     width: 100vw;
     height: 100vh;
-    background-color: black;
+    background-color: white;
 
     display: flex;
     justify-content: center;
@@ -10,8 +10,8 @@ body {
 
 #main-container {
     height: 400px;
-    width: 250px;
-    background-color: grey;
+    width: 400px;
+    background-color: rgb(41, 41, 41);
 
     display: flex;
     flex-direction: column;
@@ -27,9 +27,9 @@ body {
 }
 
 #display {
-    height: 75px;
+    height: auto;
     width: auto;
-    background-color: bisque;
+    background-color: rgb(131, 165, 103);
     margin: 5px;
     border: 2px solid black;
 
@@ -37,6 +37,7 @@ body {
     align-items: center;
     justify-content: flex-end;
 
+    font-family: 'Roboto', sans-serif;
     font-size: 35px;
 
 }
@@ -56,9 +57,8 @@ body {
     display: grid;
     grid-template-columns: auto auto auto auto;
     grid-template-rows: auto auto auto auto;
-    row-gap: 3px;
-    column-gap: 3px;
-
+    row-gap: 6px;
+    column-gap: 6px;
 }
 
 .number-button {
@@ -66,8 +66,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: maroon;
+    background-color: rgb(77, 77, 77);
 }
 
 .function-button {
@@ -75,8 +76,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: brown;
+    background-color: rgb(59, 59, 59);
 }
 
 .other-button {
@@ -84,8 +86,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: silver;
+    background-color: brown;
+    margin: 6px;
 }
 
 .equals-button {
@@ -93,10 +97,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Roboto', sans-serif;
     font-size: 30px;
-    background-color: rgb(165, 97, 42);
-}
-
-#ac {
-    margin: 3px;
+    background-color: brown;
 }

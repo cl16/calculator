@@ -101,6 +101,9 @@ function numToString(n) {
             }
             else {
                 roundedString = rounded.toString();
+                while (roundedString.charAt(roundedString.length-1) == "0") {
+                    roundedString = roundedString.slice(0, (roundedString.length - 1));
+                }
             }
             return roundedString;
         }
@@ -200,10 +203,10 @@ function updateDisplay(val) {
     }
     else {
         if (valAsString == ".") {
-
+            display.textContent = display.textContent + valAsString;
+            overwrite = false;
         }
-        
-        if (valAsString.length <= 13) {
+        else if (valAsString.length <= 13) {
             display.textContent = valAsString;
             overwrite = false;
         }
@@ -236,7 +239,9 @@ function clearAll() {
     operand1.reset();
     operand2.reset();
     setOperator(undefined);
+    overwrite = true;
     updateDisplay(0);
+    overwrite = true;
 }
 const clearButton = document.querySelector("#ac");
 clearButton.addEventListener('click', clearAll);
